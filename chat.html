@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <textarea id="message-input" class="form-control" placeholder="Type here your message..." aria-label="Type your message"></textarea>
+    <button id="send-button" class="btn btn-primary">Send Message</button>
+    <div id="messages"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        //doesn't work without "{ transports: ['websocket'], origins: 'http://localhost:*' }"
+        var socket = io('http://localhost:5000', { transports: ['websocket'], origins: 'http://localhost:*' });
+
+        // The function requests the message history from the server on login
+        socket.on('connect', function() {
+             socket.emit("message_history_request");
+        });
+
+        // The function handles the message history received from the server on login
+        socket.on('message_history', function(history) {
+             var messagesDiv = document.getElementById('messages');
+             messagesDiv.innerHTML = '';
+             history.forEach(function(message) {
+                 displaySentMessage("past user", message["content"]);
+             });
+        });
+
+        // The function handles the received messages
+        socket.on('message', function(data) {
+            displaySentMessage("other user", data);
+        });
+
+        // The function displays the received messages
+        function displaySentMessage(sender, message) {
+            var messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += '<p>' + sender + ": " + message + '</p>';
+        }
+
+        // The function sends messages to the server
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                socket.emit('handle_message', message);
+                messageInput.value = '';
+                displaySentMessage("you", message)
+            }
+        }
+
+        // The function handle the send-button click event
+        document.getElementById('send-button').addEventListener('click', function() {
+            sendMessage();
+        });
+
+        // The function handle the message-input enter key press event
+        document.getElementById('message-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
