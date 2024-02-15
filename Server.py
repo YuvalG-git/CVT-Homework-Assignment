@@ -57,4 +57,8 @@ def handle_message(message_data):
 
 
 if __name__ == '__main__':
-    socket.run(app, allow_unsafe_werkzeug=True)
+    # host='0.0.0.0' allows the server to accept connections from any IP address
+    # Currently, Clients can join the server only from the same computer
+    # In order to connect from other computers to the server
+    # There is a need to change the server's url on the client side
+    socket.run(app, host='0.0.0.0', allow_unsafe_werkzeug=True)

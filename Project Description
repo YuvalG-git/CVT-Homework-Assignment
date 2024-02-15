@@ -1,0 +1,68 @@
+## Project Title: Chat Application By Yuval Gur
+
+**Project Overview:**
+
+* The Chat Application is a web-based messaging platform that allows users to engage in real-time conversations.
+* The application is built using Flask, a web framework for Python, and Flask-SocketIO, an extension that enables WebSocket support for Flask applications.
+* The project provides a user-friendly interface for sending and receiving messages.
+* It also saves and loads correctly the message history.
+
+**Challenges Faced:**
+
+* Despite having minimal knowledge about Python networking and HTML, and no knowledge of CSS and JavaScript, I took on the challenge of developing this project. I had to learn the basics of these technologies while working on the project.
+
+**Key Features:**
+
+* Real-Time Messaging: Users can send and receive messages instantly without the need to refresh the page, thanks to WebSocket technology.
+* Message History: The application stores message history in a JSON file, allowing users to view previous messages when they join the chat.
+* User Interaction: Users can enter their usernames, send messages, and view messages from other users in a user-friendly interface.
+* Message Formatting: Messages are displayed differently based on whether they were sent by the current user, other users, or retrieved from message history.
+* Each message includes the sender's name, message content, and timestamp.
+* Signal Handling: Signal handlers ensure that the message history is saved to the JSON file before shutting down the server, preventing message loss.
+
+
+**Technologies Used:**
+
+* Python
+* Flask
+* Flask-SocketIO
+* JavaScript
+* HTML
+* CSS
+
+**Project Structure:**
+
+* Server.py: Contains the Flask application code, including routes and SocketIO event handlers.
+* messageHistoryHandler.py: Handles the usage of the JSON file for message history.
+* chat.html: HTML template for the chat interface, including input fields for username and messages.
+* messages.json: JSON file to store message history.
+* static/: Directory for static files such as JavaScript and CSS.
+* templates/: Directory for HTML templates.
+
+**How to Run:**
+
+* To run the Chat Application, ensure Python is installed on your system.
+* Clone the project repository.
+* Navigate to the project directory.
+* Install the required Python packages using pip.
+* Start the Flask development server.
+* Open your web browser to access the chat application at http://localhost:5000.
+* Enter your desired username.
+* Start sending messages in the chat interface. 
+
+The project allows clients to join to the server only from the same computer
+To allow clients from another computer to join the server, there is a need to replace "localhost" with the server's IP address in the application's configuration.
+
+
+
+**Issues Encountered:**
+
+I encountered two issues with my chat application:
+
+1. AssertionError on Client Disconnection: When a client disconnects from the server, an "AssertionError: write() before start_response" is raised.
+I've researched this error and found that it's a common issue, but I haven't been able to find a solution that works.
+
+2. Text Box Content Persistence: When copying the chat web page using Ctrl+Shift+K in the browser, the content of the name textbox remains in the textbox.
+I've attempted various solutions to address this issue, but none of them have been successful.
+
+I used ChatGPT to write this project description file.
