@@ -3,53 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chat</title>
+    <title>Chat By Yuval Gur</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style >
+        /* Custom styles for the messages */
+
+        .message-content {
+            color: #333;
+            font-size: 16px;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            clear: both;
+        }
+
+        .message-by-user {
+            background-color: #DCF8C6;
+            float: right;
+        }
+
+        .message-by-others {
+            background-color: #BCBCBC;
+            float: left;
+        }
+
+        .message-from-history-messages {
+            background-color: #8AE3F5 ;
+            float: left;
+        }
+
+        .message-time {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .message-name {
+            color: #888;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Custom style for the overall page */
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: auto;
+            padding: 10px;
+        }
+
+        #message-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            max-height: calc(100vh - 250px);
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        #message-group {
+            position: fixed;
+            overflow-y: auto;
+            bottom: 0;
+            width: 100%;
+            max-width: 1000px;
+            max-height: calc(100% - 150px);
+            z-index: 1000;
+        }
+
+    </style>
 </head>
 <body>
-    <textarea id="message-input" class="form-control" placeholder="Type here your message..." aria-label="Type your message"></textarea>
-    <button id="send-button" class="btn btn-primary">Send Message</button>
-    <div id="messages"></div>
+    <div id="chat-container" class="container mt-5">
+        <div class="username-group mb-3">
+            <div class="row">
+                <div class="col-sm" style="width: 800px">
+                    <input id="username-input" class="form-control" placeholder="Enter your name..." aria-label="Enter your name" maxlength="30"></input>
+                </div>
+                <div class="col-sm">
+                    <button id="save-name-button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+        <div id="message-container" class="mt-3">
+        </div>
+        <div id="message-group" style="display: none;">
+            <div class="input-group mb-3">
+                <textarea id="message-textbox" class="form-control" placeholder="Type here your message..." aria-label="Type your message"></textarea>
+                <button id="send-button" class="btn btn-primary">Send Message</button>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
     <script>
-        //doesn't work without "{ transports: ['websocket'], origins: 'http://localhost:*' }"
+
+        // doesn't work without "{ transports: ['websocket'], origins: 'http://localhost:*' }"
         var socket = io('http://localhost:5000', { transports: ['websocket'], origins: 'http://localhost:*' });
+
+        var clientName = "";
+
+        // "enum" used to design the message according to the sender identity
+        const messageType = {
+          byUser: 'by_user',
+          byOthers: 'by_others',
+          fromMessageHistory: 'from_message_history'
+        };
 
         // The function requests the message history from the server on login
         socket.on('connect', function() {
-             socket.emit("message_history_request");
+                var socketId = socket.id;
+                socket.emit("message_history_request", socketId);
         });
 
-        // The function handles the message history received from the server on login
+        // The function receives the message history from the server
+        // It handles the message history received from the server after entering a username
         socket.on('message_history', function(history) {
-             var messagesDiv = document.getElementById('messages');
-             messagesDiv.innerHTML = '';
+             document.getElementById('message-container').innerHTML = '';
              history.forEach(function(message) {
-                 displaySentMessage("past user", message["content"]);
+                 displaySentMessage(message["sender"], message["message"], message["time"], messageType.fromMessageHistory);
              });
         });
 
-        // The function handles the received messages
-        socket.on('message', function(data) {
-            displaySentMessage("other user", data);
+        // The function receive a dictionary containing the message details (sender name, message content and time)
+        // It handles the received messages by calling the displaySentMessage method
+        socket.on('message', function(messageData) {
+            displaySentMessage(messageData.sender, messageData.message, messageData.time, messageType.byOthers);
         });
 
-        // The function displays the received messages
-        function displaySentMessage(sender, message) {
-            var messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML += '<p>' + sender + ": " + message + '</p>';
+        // The function receive a name, message content, timestamp and messageType
+        // It displays the received message on the web page due to the recieved data
+        function displaySentMessage(name, message, timestamp, messageTypeParameter ) {
+            var messageContainer = document.createElement('div');
+
+            // creates the message's class path
+            switch(messageTypeParameter) {
+                case messageType.byUser:
+                    messageContainer.classList.add('message-content', 'message-by-user');
+                    break;
+                case messageType.byOthers:
+                    messageContainer.classList.add('message-content', 'message-by-others');
+                    break;
+                case messageType.fromMessageHistory:
+                    messageContainer.classList.add('message-content', 'message-from-history-messages');
+                    break;
+            }
+
+            // handles the message's username part
+            var senderElement = document.createElement('div');
+            senderElement.className = 'message-name';
+            senderElement.textContent = name;
+            messageContainer.appendChild(senderElement);
+
+            // handles the message content
+            var messageContent = document.createElement('div');
+            messageContent.textContent = message;
+            messageContainer.appendChild(messageContent);
+
+            // handles the message time
+            var timestampElement = document.createElement('div');
+            timestampElement.className = 'message-time';
+            timestampElement.textContent = timestamp;
+            messageContainer.appendChild(timestampElement);
+
+            document.getElementById('message-container').appendChild(messageContainer);
+
+            // scroll the message container to the button to show the new message
+            var Container = document.getElementById('message-container');
+            Container.scrollTop = Container.scrollHeight;
         }
 
         // The function sends messages to the server
         function sendMessage() {
-            const messageInput = document.getElementById('message-input');
+            const messageInput = document.getElementById('message-textbox');
             const message = messageInput.value.trim();
+            const username = clientName;
+
+            // display the message and sends the message details to the server
             if (message !== '') {
-                socket.emit('handle_message', message);
+                var currentTime = getCurrentTimestamp();
+                socket.emit('handle_message', { sender: username, message: message, time: currentTime});
                 messageInput.value = '';
-                displaySentMessage("you", message)
+                displaySentMessage(username,message, currentTime, messageType.byUser)
             }
+        }
+
+        // The function gets the current timestamp
+        // It returns the current timestamp (hours + minutes)
+        function getCurrentTimestamp() {
+            var currentDate = new Date();
+            var year = currentDate.getFullYear().toString();
+            var month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            var day = currentDate.getDate().toString().padStart(2, '0');
+            var hours = currentDate.getHours().toString().padStart(2, '0');
+            var minutes = currentDate.getMinutes().toString().padStart(2, '0');
+            var timestamp = hours + ':' + minutes + ' ' + day + '/' + month + '/' + year;
+            return timestamp;
         }
 
         // The function handle the send-button click event
@@ -57,12 +209,28 @@
             sendMessage();
         });
 
-        // The function handle the message-input enter key press event
-        document.getElementById('message-input').addEventListener('keypress', function(event) {
+        // The function handle the message-textbox enter key press event
+        document.getElementById('message-textbox').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
         });
+
+        // The function saves the client's username
+        // It also redesigns the web page
+        document.getElementById('save-name-button').addEventListener('click', function() {
+            var usernameInput = document.getElementById('username-input');
+            var username = usernameInput.value.trim();
+            if (username !== '') {
+                clientName = username;
+                usernameInput.disabled = true;
+                document.getElementById('message-group').style.display = 'block';
+                document.getElementById('save-name-button').style.display = 'none';
+                var newText = 'Username: ' + username;
+                usernameInput.value = newText;
+            }
+        });
+
     </script>
-</body>
+    </body>
 </html>
