@@ -1,0 +1,32 @@
+[
+    {
+        "sender": "yuval",
+        "message": "hi",
+        "time": "15:06 15/02/2024"
+    },
+    {
+        "sender": "ben",
+        "message": "hi",
+        "time": "15:06 15/02/2024"
+    },
+    {
+        "sender": "yuval",
+        "message": "how are you doing?",
+        "time": "15:06 15/02/2024"
+    },
+    {
+        "sender": "ben",
+        "message": "I'm fine",
+        "time": "15:06 15/02/2024"
+    },
+    {
+        "sender": "ben",
+        "message": "how about you?",
+        "time": "15:07 15/02/2024"
+    },
+    {
+        "sender": "yuval",
+        "message": "good",
+        "time": "15:07 15/02/2024"
+    }
+]
