@@ -74,10 +74,29 @@
             z-index: 1000;
         }
 
+        /* Custom style for connection status */
+
+        #connection-status {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .status-offline {
+            background-color: #ffcccc;
+            color: #cc0000;
+        }
+
+        .status-online {
+            background-color: #ccffcc;
+            color: #00cc00;
+        }
+
     </style>
 </head>
 <body>
     <div id="chat-container" class="container mt-5">
+        <div id="connection-status" class="status-online"></div>
         <div class="username-group mb-3">
             <div class="row">
                 <div class="col-sm" style="width: 800px">
@@ -116,9 +135,23 @@
         };
 
         // The function requests the message history from the server on login
+        // It also changes the connection status to online
         socket.on('connect', function() {
-                var socketId = socket.id;
-                socket.emit("message_history_request", socketId);
+            // sends the message history request to the server
+            var socketId = socket.id;
+            socket.emit("message_history_request", socketId);
+
+            // changes the connection status to online
+            var connectionStatus = document.getElementById('connection-status');
+            connectionStatus.innerHTML = 'Connected to server.';
+            connectionStatus.className = 'status-online';
+        });
+
+        // The function changes the connection status to offline
+        socket.on('connect_error', function() {
+            var connectionStatus = document.getElementById('connection-status');
+            connectionStatus.innerHTML = 'Server is currently offline. Please try later.';
+            connectionStatus.className = 'status-offline';
         });
 
         // The function receives the message history from the server
@@ -129,6 +162,7 @@
                  displaySentMessage(message["sender"], message["message"], message["time"], messageType.fromMessageHistory);
              });
         });
+
 
         // The function receive a dictionary containing the message details (sender name, message content and time)
         // It handles the received messages by calling the displaySentMessage method

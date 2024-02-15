@@ -38,6 +38,10 @@
 * messages.json: JSON file to store message history.
 * static/: Directory for static files such as JavaScript and CSS.
 * templates/: Directory for HTML templates.
+* Unit Test (not a directory): 
+  * jsonUnitTest.py: Checks the messageHistoryHandler.py class.
+  * Test.json: JSON file used to test the messageHistoryHandler.py class.
+
 
 **How to Run:**
 
@@ -53,8 +57,6 @@
 The project allows clients to join to the server only from the same computer
 To allow clients from another computer to join the server, there is a need to replace "localhost" with the server's IP address in the application's configuration.
 
-
-
 **Issues Encountered:**
 
 I encountered two issues with my chat application:
@@ -65,4 +67,4 @@ I've researched this error and found that it's a common issue, but I haven't bee
 2. Text Box Content Persistence: When copying the chat web page using Ctrl+Shift+K in the browser, the content of the name textbox remains in the textbox.
 I've attempted various solutions to address this issue, but none of them have been successful.
 
-I used ChatGPT to write this project description file.
+*I used ChatGPT to write this project description file.
