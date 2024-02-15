@@ -14,15 +14,25 @@ def clear_file(json_file):
         file.write('[]')
 
 
-# The function prints if the list is empty or not
-def handle_empty_list(list_value):
+# The function returns True if the list is empty
+# Else, it returns False
+def is_list_empty(list_value):
     if not list_value:
-        print("the list is empty", end="\n\n")
+        return True
     else:
-        print("the list is not empty", end="\n\n")
+        return False
 
+
+# The method prints the test result
+def print_test_result(test_name, test_result):
+    if test_result is True:
+        success_value = "pass"
+    else:
+        success_value = "fail"
+    print("[{}] result is: {}".format(test_name, success_value), end="\n\n")
 
 # unit test code:
+
 
 # checks regular string
 message_data_1 = {
@@ -52,16 +62,16 @@ message_data_4 = {
     'time': "}"
 }
 
-# checks the scenario when loading from non-exist file
+# checks the scenario when loading from non-existing file
 file_not_exist_history = messageHistoryHandler.load_messages("NotExist.json")
-handle_empty_list(file_not_exist_history)
+print_test_result("File Not Exist", is_list_empty(file_not_exist_history))
 
 # clears the JSON file from past content
 clear_file(json_file_name)
 
 # checks the scenario when loading from an empty file
 empty_message_history = messageHistoryHandler.load_messages(json_file_name)
-handle_empty_list(empty_message_history)
+print_test_result("Empty File", is_list_empty(empty_message_history))
 
 # creates a list of the checked messages
 messages = [message_data_1, message_data_2, message_data_3, message_data_4]
@@ -72,8 +82,7 @@ messageHistoryHandler.save_messages(json_file_name, messages)
 # loads the messages from the 'Test.json' file
 message_history = messageHistoryHandler.load_messages(json_file_name)
 
-
-message_was_different = False
+message_was_not_different = True
 
 # for each message, it prints the message content and the process success
 for message in message_history:
@@ -87,17 +96,13 @@ for message in message_history:
         print("Message is identical to message_data_4:")
     else:
         print("Message is different:")
-        message_was_different = True
+        message_was_not_different = False
     print(message, end="\n\n")
-
-if message_was_different is False:
-    print("WORKS!", end="\n\n")
+print_test_result("File With Values - Same Values", message_was_not_different)
 
 # checks if the lists' length is identical
 message_length = len(messages)
 message_history_length = len(message_history)
-if message_length == message_history_length:
-    print("Same number: {}\nworked! :)".format(message_length), end="\n\n")
-else:
-    print("different number :(", end="\n\n")
+print_test_result("File With Values - Values Number", message_length == message_history_length)
+
 

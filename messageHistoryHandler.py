@@ -6,7 +6,7 @@ import sys
 json_file_name = 'messages.json'
 
 
-# the function loads the messages from the JSON file and returns them
+# The function loads the messages from the JSON file and returns them
 def load_messages(json_file=json_file_name):
     if os.path.exists(json_file):
         with open(json_file, 'r') as file:
@@ -20,7 +20,7 @@ def load_messages(json_file=json_file_name):
 message_history = load_messages()
 
 
-# this signal handler function saves messages to the JSON file before it shut down
+# This signal handler function saves messages to the JSON file before it shut down
 def save_messages_before_shut_down(signal, frame, json_file=json_file_name):
     print("Server is shutting down. Saving messages...")
     save_messages(json_file)

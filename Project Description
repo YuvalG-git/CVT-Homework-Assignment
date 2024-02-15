@@ -16,8 +16,8 @@
 * Real-Time Messaging: Users can send and receive messages instantly without the need to refresh the page, thanks to WebSocket technology.
 * Message History: The application stores message history in a JSON file, allowing users to view previous messages when they join the chat.
 * User Interaction: Users can enter their usernames, send messages, and view messages from other users in a user-friendly interface.
-* Message Formatting: Messages are displayed differently based on whether they were sent by the current user, other users, or retrieved from message history.
-* Each message includes the sender's name, message content, and timestamp.
+* Message Formatting: Messages are displayed differently based on whether they were sent by the current user, other users, or retrieved from message history. 
+Each message includes the sender's name, message content, and timestamp.
 * Signal Handling: Signal handlers ensure that the message history is saved to the JSON file before shutting down the server, preventing message loss.
 
 
